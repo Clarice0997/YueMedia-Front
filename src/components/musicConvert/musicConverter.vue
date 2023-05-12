@@ -5,7 +5,7 @@
       <div class="content-area">
         <div class="index-counter">
           <div class="counter-box">
-            我们已转换 <span>{{ musicConvertAnalyse.totalTasks }}</span> 个文件，总大小为 <span>{{ (musicConvertAnalyse.totalSize / 1024 / 1024) | numToFixed }}</span> MB，平均转码速度
+            我们已转换 <span>{{ musicConvertAnalyse.totalTasks }}</span> 个文件，总大小为 <span>{{ (musicConvertAnalyse.totalSize / 1024 / 1024 / 1024) | numToFixed }}</span> GB，平均转码速度
             <span>{{ musicConvertAnalyse.averageSpeed | numToFixed }}</span>
             MS
           </div>
@@ -58,7 +58,7 @@
               <template slot-scope="scope">
                 <span style="margin-right: 10px">转换格式</span>
                 <el-select v-model="scope.row.targetCodec" filterable placeholder="请选择" clearable>
-                  <el-option v-for="(item, index) in supportMusicCodec" :key="index" :label="item.codec" :value="item.codec" :disabled="item.codec === scope.row.codec"></el-option>
+                  <el-option v-for="(item, index) in supportMusicCodec" :key="index" :label="item.name" :value="item.codec" :disabled="item.codec === scope.row.codec"></el-option>
                 </el-select>
               </template>
             </el-table-column>
