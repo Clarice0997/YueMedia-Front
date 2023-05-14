@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 // 路由
 import introduction from '@/views/Introduction/index.vue'
 import login from '@/views/Login'
+import notFound from "@/views/NotFound/index.vue";
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ const routes = [
         }
       }
     ]
+  },
+  {
+    path:'/404',
+    name:'notFound',
+    component: notFound
   }
 ]
 

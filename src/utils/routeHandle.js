@@ -34,3 +34,33 @@ export const resetRouter = async () => {
   })
   router.matcher = newRouter.matcher
 }
+
+/**
+ * 递归路由树 判断是否存在匹配路径
+ * @param routeTree
+ * @param targetPath
+ * @returns
+ */
+export const findRoutePath = async (routeTree, targetPath, parentPath) => {
+  let result = null
+
+  routeTree.forEach(route => {
+    let fullPath = `${parentPath}${route.path}`
+    if (parentPath) {
+      fullPath = `${parentPath}/${route.path}`
+    } else {
+      fullPath = route.path
+    }
+    console.log(fullPath)
+    if (fullPath === targetPath) {
+      result = route
+    } else if (route.children) {
+      const childResult = findRoutePath(route.children, targetPath, fullPath)
+      if (childResult) {
+        result = childResult
+      }
+    }
+  })
+
+  return result
+}

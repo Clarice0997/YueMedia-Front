@@ -7,7 +7,7 @@ import 'nprogress/nprogress.css'
 import { verify, getProfile } from '@/apis/loginAPI'
 import { getRoutesAPI } from '@/apis/routesAPI'
 import store from './store'
-import { routeHandle } from '@/utils/routeHandle'
+import { findRoutePath, routeHandle } from '@/utils/routeHandle'
 
 // 配置Nprogress项 关闭右上角螺旋加载提示
 NProgress.configure({ showSpinner: false })
@@ -120,15 +120,21 @@ router.beforeEach(async (to, from, next) => {
       router.addRoute(route)
     })
     router.replace(to.path)
-  } else if (to.path === '/') {
-    return next('/login/login')
   } else {
     return next()
   }
 })
 
-// 全局路由前置 （获取用户信息）
+// 全局路由前置 （获取用户信息 | 判断页面是否存在）
 router.beforeEach(async (to, from, next) => {
+  // 判断页面是否存在 页面不存在跳转 404 页面
+  // const existPage = await findRoutePath(store.getters['dynamicRoutes/getRoutes'], to.path)
+  // console.log(!existPage)
+  // if (!existPage) {
+  //   return next('/404')
+  // }
+
+  // 获取用户信息
   if (to.matched.some(record => record.meta.requireAuth)) {
     if (!store.state.userProfile.userData) {
       const {
