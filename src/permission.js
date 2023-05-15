@@ -39,7 +39,7 @@ router.beforeEach(async (to, from, next) => {
         await deleteCookie('Access-Token')
         await localStorage.removeItem('Access-Token')
         await store.dispatch('dynamicRoutes/asyncClearRoutes')
-        return next('/login/login')
+        next('/login/login')
       }
     }
   }
@@ -49,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
     if (hasToken) {
       // 存在 Token 则放行，否则跳转登录页
       NProgress.done()
-      return next()
+      next()
     } else {
       Message({
         message: '登录已过期，请重新登录',
@@ -58,39 +58,19 @@ router.beforeEach(async (to, from, next) => {
       })
       await store.dispatch('dynamicRoutes/asyncClearRoutes')
       NProgress.done()
-      return next('/login/login')
-    }
-  } else if (to.path.includes('login')) {
-    // 跳转登录页，判断是否已经登录
-    // 登录则重定向首页，未登录则放行
-    if (!hasToken) {
-      NProgress.done()
-      return next()
-    } else {
-      Message({
-        message: '用户已登录，无需登录',
-        type: 'warning',
-        duration: 1500
-      })
-      NProgress.done()
-      return next('/home')
+      next('/login/login')
     }
   } else if (to.path === '/') {
-    return next()
+    next()
   } else {
-    return next()
+    next()
   }
 })
 
 // 全局路由前置 （动态路由）
 router.beforeEach(async (to, from, next) => {
-  // 登录页面放行
-  if (to.path === '/' || to.path.includes('login')) {
-    return next()
-  }
-
   // 判断 Vuex 中是否存在路由数据
-  if (store.getters['dynamicRoutes/getDynamicRoutes'].length === 0) {
+  if (to.matched.some(record => record.meta.requireAuth) && store.getters['dynamicRoutes/getDynamicRoutes'].length === 0) {
     // 获取动态路由菜单
     const {
       data: { routes }
@@ -121,28 +101,23 @@ router.beforeEach(async (to, from, next) => {
     })
     router.replace(to.path)
   } else {
-    return next()
+    next()
   }
 })
 
 // 全局路由前置 （获取用户信息 | 判断页面是否存在）
 router.beforeEach(async (to, from, next) => {
   // 判断页面是否存在 页面不存在跳转 404 页面
-  // const existPage = await findRoutePath(store.getters['dynamicRoutes/getRoutes'], to.path)
-  // console.log(!existPage)
-  // if (!existPage) {
-  //   return next('/404')
-  // }
+  if (!(await findRoutePath(store.getters['dynamicRoutes/getRoutes'], to.path)) && to.path !== '/') {
+    next('/404')
+  }
 
   // 获取用户信息
-  if (to.matched.some(record => record.meta.requireAuth)) {
-    if (!store.state.userProfile.userData) {
-      const {
-        data: { data }
-      } = await getProfile()
-      await store.dispatch('userProfile/saveUserData', data)
-      next()
-    }
+  if (to.matched.some(record => record.meta.requireAuth && !store.state.userProfile.userData)) {
+    const {
+      data: { data }
+    } = await getProfile()
+    await store.dispatch('userProfile/saveUserData', data)
     next()
   } else {
     next()

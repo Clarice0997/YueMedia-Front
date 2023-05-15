@@ -39,19 +39,19 @@ export const resetRouter = async () => {
  * 递归路由树 判断是否存在匹配路径
  * @param routeTree
  * @param targetPath
+ * @param parentPath
  * @returns
  */
 export const findRoutePath = async (routeTree, targetPath, parentPath) => {
   let result = null
 
   routeTree.forEach(route => {
-    let fullPath = `${parentPath}${route.path}`
+    let fullPath
     if (parentPath) {
       fullPath = `${parentPath}/${route.path}`
     } else {
       fullPath = route.path
     }
-    console.log(fullPath)
     if (fullPath === targetPath) {
       result = route
     } else if (route.children) {
