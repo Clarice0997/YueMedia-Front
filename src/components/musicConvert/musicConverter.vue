@@ -5,7 +5,7 @@
       <div class="content-area">
         <div class="index-counter">
           <div class="counter-box">
-            我们已转换 <span>{{ musicConvertAnalyse.totalTasks }}</span> 个文件，总大小为 <span>{{ (musicConvertAnalyse.totalSize / 1024 / 1024 / 1024) | numToFixed }}</span> GB，平均转码速度
+            我们已转换 <span>{{ musicConvertAnalyse.totalTasks }}</span> 个文件，总大小为 <span>{{ musicConvertAnalyse.totalSize | calculateStorage }}</span> GB，平均转码速度
             <span>{{ musicConvertAnalyse.averageSpeed | numToFixed }}</span>
             MS
           </div>
@@ -204,6 +204,15 @@ export default {
         return value.toFixed(fixed)
       } else {
         return 'N/A'
+      }
+    },
+    calculateStorage(value) {
+      if (value / 1024 / 1024 / 1024 >= 1) {
+        return `${value.toFixed(2)} GB`
+      } else if (value / 1024 / 1024 >= 1) {
+        return `${value.toFixed(2)} MB`
+      } else {
+        return `0 MB`
       }
     },
     truncateFilename(value, maxLength) {
