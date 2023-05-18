@@ -24,3 +24,25 @@ export const updateUserPasswordAPI = async (password, newPassword) => {
     newPassword
   })
 }
+
+/**
+ * 验证占用电话 API
+ * @param phone
+ * @returns
+ */
+export const verifyPhoneAPI = async phone => {
+  return request.get('/apis/user/verify/phone', {
+    params: { phone }
+  })
+}
+
+/**
+ * 验证占用邮箱 API
+ * @param email
+ * @returns
+ */
+export const verifyEmailAPI = async email => {
+  return request.get('/apis/user/verify/email', {
+    params: { email }
+  })
+}

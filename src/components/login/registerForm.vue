@@ -29,6 +29,7 @@
 <script>
 import { registerAPI } from '@/apis/loginAPI'
 import router from '@/router'
+import { verifyEmailAPI, verifyPhoneAPI } from '@/apis/userAPI'
 
 export default {
   name: 'MusicManageSystemRegister',
@@ -124,6 +125,30 @@ export default {
             pattern: /^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/,
             message: '电话格式不正确',
             trigger: 'blur'
+          },
+          // 防抖占用电话校验
+          {
+            validator: (rule, value, callback) => {
+              // 空数据处理
+              if (value === '') {
+                callback()
+                // 清除定时器
+                if (this.phoneTimer) clearTimeout(this.phoneTimer)
+              } else {
+                // 清除定时器
+                if (this.phoneTimer) clearTimeout(this.phoneTimer)
+                // 设置定时器
+                this.phoneTimer = setTimeout(() => {
+                  verifyPhoneAPI(value)
+                    .then(() => callback())
+                    .catch(error => {
+                      if (error.response.status === 409) {
+                        callback(new Error(error.response.data.message))
+                      }
+                    })
+                }, 500)
+              }
+            }
           }
         ],
         email: [
@@ -138,13 +163,40 @@ export default {
             pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
             message: '邮箱格式不正确',
             trigger: 'blur'
+          },
+          // 防抖占用邮箱校验
+          {
+            validator: (rule, value, callback) => {
+              // 空数据处理
+              if (value === '') {
+                callback()
+                // 清除定时器
+                if (this.emailTimer) clearTimeout(this.emailTimer)
+              } else {
+                // 清除定时器
+                if (this.emailTimer) clearTimeout(this.emailTimer)
+                // 设置定时器
+                this.emailTimer = setTimeout(() => {
+                  verifyEmailAPI(value)
+                    .then(() => callback())
+                    .catch(error => {
+                      if (error.response.status === 409) {
+                        callback(new Error(error.response.data.message))
+                      }
+                    })
+                }, 500)
+              }
+            }
           }
         ]
       },
       // Loading显隐
       fullscreenLoading: false,
       // 按钮加载状态
-      btnLoading: false
+      btnLoading: false,
+      // 防抖计时器
+      phoneTimer: null,
+      emailTimer: null
     }
   },
 
