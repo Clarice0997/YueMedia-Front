@@ -6,7 +6,7 @@
       <el-button type="primary" icon="el-icon-magic-stick" @click="clickGenerateTokenHandler" style="margin: 0 10px">生成 Token </el-button>
       <span style="margin-left: 10px">Token：</span>
       <el-input placeholder="待生成 Token" prefix-icon="el-icon-key" :value="openApiToken" readonly></el-input>
-      <el-button type="primary" icon="el-icon-copy-document" @click="clickCopyTokenHandler(openApiToken)" :disabled="!isAllowCopy" style="margin: 0 10px"></el-button>
+      <el-button type="primary" icon="el-icon-copy-document" @click="clickCopyTokenHandler()" :disabled="!isAllowCopy" style="margin: 0 10px"></el-button>
     </el-card>
     <el-card shadow="hover" class="body-card" body-style="height:100%">
       <iframe :src="docUrl"></iframe>
@@ -52,9 +52,17 @@ export default {
         }
       }
     },
-    async clickCopyTokenHandler(text) {
-      await navigator.clipboard.writeText(text)
-      this.$message.success('复制到剪切板成功！')
+    async clickCopyTokenHandler() {
+      // Token 尚未生成处理
+      if (this.openApiToken === '') {
+        await this.clickGenerateTokenHandler()
+      }
+      await navigator.clipboard.writeText(this.openApiToken)
+      this.$notify({
+        title: '剪切板复制成功',
+        message: '可以使用 Token 通过开放 API 校验',
+        type: 'success'
+      })
     }
   }
 }
