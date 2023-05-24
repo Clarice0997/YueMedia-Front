@@ -45,22 +45,25 @@ export const resetRouter = async () => {
 export const findRoutePath = async (routeTree, targetPath, parentPath) => {
   let result = null
 
-  routeTree.forEach(route => {
+  for (let i = 0; i < routeTree.length; i++) {
     let fullPath
     if (parentPath) {
-      fullPath = `${parentPath}/${route.path}`
+      fullPath = `${parentPath}/${routeTree[i].path}`
     } else {
-      fullPath = route.path
+      fullPath = routeTree[i].path
     }
+
     if (fullPath === targetPath) {
-      result = route
-    } else if (route.children) {
-      const childResult = findRoutePath(route.children, targetPath, fullPath)
+      result = routeTree[i]
+      break
+    } else if (routeTree[i].children) {
+      const childResult = await findRoutePath(routeTree[i].children, targetPath, fullPath)
       if (childResult) {
         result = childResult
+        break
       }
     }
-  })
+  }
 
   return result
 }

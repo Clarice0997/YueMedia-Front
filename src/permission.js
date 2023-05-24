@@ -69,8 +69,8 @@ router.beforeEach(async (to, from, next) => {
 
 // 全局路由前置 （动态路由）
 router.beforeEach(async (to, from, next) => {
-  // 判断 Vuex 中是否存在路由数据
-  if (to.matched.some(record => record.meta.requireAuth) && store.getters['dynamicRoutes/getDynamicRoutes'].length === 0) {
+  // 判断 Vuex 中是否存在路由数据（处于登录状态）
+  if (store.getters['dynamicRoutes/getDynamicRoutes'].length === 0 && getCookie('Access-Token')) {
     // 获取动态路由菜单
     const {
       data: { routes }
@@ -108,7 +108,7 @@ router.beforeEach(async (to, from, next) => {
 // 全局路由前置 （获取用户信息 | 判断页面是否存在）
 router.beforeEach(async (to, from, next) => {
   // 判断页面是否存在 页面不存在跳转 404 页面
-  if (!(await findRoutePath(store.getters['dynamicRoutes/getRoutes'], to.path)) && to.path !== '/') {
+  if (!(await findRoutePath(store.getters['dynamicRoutes/getRoutes'], to.path))) {
     next('/404')
   }
 
