@@ -46,3 +46,13 @@ export const verifyEmailAPI = async email => {
     params: { email }
   })
 }
+
+/**
+ * 无感刷新 API
+ * @returns
+ */
+export const refreshTokenAPI = async () => {
+  return request.get('/apis/user/refresh_token').then(async ({ data: { AccessToken } }) => {
+    await localStorage.setItem('Access-Token', AccessToken)
+  })
+}

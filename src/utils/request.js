@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { deleteCookie, getCookie } from '@/utils/cookie'
+import { getCookie } from '@/utils/cookie'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import router from '@/router'
+import { refreshTokenAPI } from '@/apis/userAPI'
 
 // 配置Nprogress项 关闭右上角螺旋加载提示
 NProgress.configure({ showSpinner: false })
@@ -46,9 +46,8 @@ request.interceptors.response.use(
   async error => {
     if (error.response) {
       if (error.response.status === 401) {
-        await deleteCookie('Access-Token')
-        await localStorage.removeItem('Access-Token')
-        router.replace('/login/login')
+        await refreshTokenAPI()
+        return Promise.reject(error)
       }
     }
     return Promise.reject(error)

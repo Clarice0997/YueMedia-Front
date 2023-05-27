@@ -8,6 +8,7 @@ import { verify, getProfile } from '@/apis/loginAPI'
 import { getRoutesAPI } from '@/apis/routesAPI'
 import store from './store'
 import { findRoutePath, routeHandle } from '@/utils/routeHandle'
+import { refreshTokenAPI } from '@/apis/userAPI'
 
 // 配置Nprogress项 关闭右上角螺旋加载提示
 NProgress.configure({ showSpinner: false })
@@ -26,6 +27,15 @@ router.beforeEach(async (to, from, next) => {
     if (localToken) {
       hasToken = localToken
       await setCookie('Access-Token', localToken)
+    }
+  }
+
+  // 如果不存在 Access-Token，则尝试无感刷新
+  if (!hasToken) {
+    let refreshToken = await getCookie('Refresh-Token')
+    if (refreshToken) {
+      await refreshTokenAPI()
+      next()
     }
   }
 
