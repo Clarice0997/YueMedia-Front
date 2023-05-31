@@ -12,7 +12,7 @@
         </div>
         <div class="user-container">
           <div class="full-screen" @click="clickFullScreenHandler">
-              <i class="el-icon-full-screen"></i>
+            <i class="el-icon-full-screen"></i>
           </div>
           <div class="userInfo" @click="isShowUserForm = true">
             <i class="el-icon-user"></i>
@@ -105,6 +105,7 @@ export default {
       // 清除登录索引 和 用户信息
       await this.$store.dispatch('userProfile/clearUserData')
       deleteCookie('Access-Token')
+      deleteCookie('Refresh-Token')
       localStorage.removeItem('Access-Token')
       // 重置路由
       await resetRouter()
@@ -141,28 +142,30 @@ export default {
       this.isShowUserForm = false
     },
     // 全屏点击事件
-    clickFullScreenHandler(){
-      const elem = document.documentElement;
+    clickFullScreenHandler() {
+      const elem = document.documentElement
       // 判断是否处于全屏状态 适配多种浏览器
-      if (!document.fullscreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.msFullscreenElement) {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
         // 进入全屏模式
         if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { /* Safari */
-          elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { /* IE11 */
-          elem.msRequestFullscreen();
+          elem.requestFullscreen()
+        } else if (elem.webkitRequestFullscreen) {
+          /* Safari */
+          elem.webkitRequestFullscreen()
+        } else if (elem.msRequestFullscreen) {
+          /* IE11 */
+          elem.msRequestFullscreen()
         }
       } else {
         // 退出全屏模式
         if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) { /* Safari */
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { /* IE11 */
-          document.msExitFullscreen();
+          document.exitFullscreen()
+        } else if (document.webkitExitFullscreen) {
+          /* Safari */
+          document.webkitExitFullscreen()
+        } else if (document.msExitFullscreen) {
+          /* IE11 */
+          document.msExitFullscreen()
         }
       }
     }
@@ -234,7 +237,7 @@ export default {
     line-height: 60px;
     margin-right: 20px;
 
-    .full-screen{
+    .full-screen {
       width: 75px;
     }
 

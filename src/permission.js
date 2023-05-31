@@ -35,7 +35,7 @@ router.beforeEach(async (to, from, next) => {
     let refreshToken = await getCookie('Refresh-Token')
     if (refreshToken) {
       await refreshTokenAPI()
-      next()
+      return next()
     }
   }
 
@@ -45,11 +45,10 @@ router.beforeEach(async (to, from, next) => {
       await verify()
     } catch ({ response }) {
       if (response.data.code !== 200) {
-        hasToken = undefined
         await deleteCookie('Access-Token')
         await localStorage.removeItem('Access-Token')
         await store.dispatch('dynamicRoutes/asyncClearRoutes')
-        next('/login/login')
+        return next('/login/login')
       }
     }
   }
@@ -59,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
     if (hasToken) {
       // 存在 Token 则放行，否则跳转登录页
       NProgress.done()
-      next()
+      return next()
     } else {
       Message({
         message: '登录已过期，请重新登录',
@@ -68,17 +67,10 @@ router.beforeEach(async (to, from, next) => {
       })
       await store.dispatch('dynamicRoutes/asyncClearRoutes')
       NProgress.done()
-      next('/login/login')
+      return next('/login/login')
     }
-  } else if (to.path === '/') {
-    next()
-  } else {
-    next()
   }
-})
 
-// 全局路由前置 （动态路由）
-router.beforeEach(async (to, from, next) => {
   // 判断 Vuex 中是否存在路由数据（处于登录状态）
   if (store.getters['dynamicRoutes/getDynamicRoutes'].length === 0 && getCookie('Access-Token')) {
     // 获取动态路由菜单
@@ -109,17 +101,12 @@ router.beforeEach(async (to, from, next) => {
     store.getters['dynamicRoutes/getDynamicRoutes'].forEach(route => {
       router.addRoute(route)
     })
-    router.replace(to.path)
-  } else {
-    next()
+    return router.replace(to.path)
   }
-})
 
-// 全局路由前置 （获取用户信息 | 判断页面是否存在）
-router.beforeEach(async (to, from, next) => {
   // 判断页面是否存在 页面不存在跳转 404 页面
   if (!(await findRoutePath(store.getters['dynamicRoutes/getRoutes'], to.path))) {
-    next('/404')
+    return next('/404')
   }
 
   // 获取用户信息
@@ -128,10 +115,10 @@ router.beforeEach(async (to, from, next) => {
       data: { data }
     } = await getProfile()
     await store.dispatch('userProfile/saveUserData', data)
-    next()
-  } else {
-    next()
+    return next()
   }
+
+  return next()
 })
 
 // 全局路由后置
